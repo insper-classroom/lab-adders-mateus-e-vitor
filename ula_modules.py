@@ -16,14 +16,6 @@ from myhdl import *
 
 @block
 def halfAdder(a, b, soma, carry):
-    """Meio somador de 1 bit.
-
-    Args:
-        a: Entrada de 1 bit.
-        b: Entrada de 1 bit.
-        soma: Saida de soma.
-        carry: Saida de carry.
-    """
     @always_comb
     def comb():
         soma.next = a ^ b
@@ -47,17 +39,16 @@ def fullAdder(a, b, c, soma, carry):
 
 @block
 def adder2bits(x, y, soma, carry):
-    """Somador de 2 bits.
+    c0 = Signal(bool(0)) 
+    c1 = Signal(bool(0)) 
 
-    Implementacao esperada com dois full adders, gerando
-    uma soma de 2 bits e carry final.
+    result_half = halfAdder(x[0], y[0], soma[0], c0)
+    result_full = fullAdder(x[1], y[1], c0, soma[1], c1)
+    
+    @always_comb
+    def comb():
+        carry.next = c1
 
-    Args:
-        x: Vetor de entrada de 2 bits.
-        y: Vetor de entrada de 2 bits.
-        soma: Vetor de saida de 2 bits.
-        carry: Carry de saida.
-    """
     return instances()
 
 
