@@ -13,7 +13,6 @@ Este modulo declara implementacoes de:
 
 from myhdl import *
 
-
 @block
 def halfAdder(a, b, soma, carry):
     @always_comb
@@ -56,35 +55,30 @@ def adder2bits(x, y, soma, carry):
 
 @block
 def adder(x, y, soma, carry):
-    """Somador generico para vetores de mesmo tamanho.
+    n = len(x)
+    carries = [Signal(bool(0)) for _ in range(n + 1)]
 
-    Implementacao esperada por ripple-carry (encadeamento de carries)
-    usando celulas de full adder.
+    fa_instances = [
+        fullAdder(x[i], y[i], carries[i], soma[i], carries[i + 1])
+        for i in range(n)
+    ]
 
-    Args:
-        x: Vetor de entrada.
-        y: Vetor de entrada.
-        soma: Vetor de saida com mesma largura de x/y.
-        carry: Carry de saida mais significativo.
-    """
-    return instances()
+    @always_comb
+    def comb():
+        carry.next = carries[n]
+
+    return fa_instances + [comb]
 
 
 @block
 def addervb(x, y, soma, carry):
-    """Somador vetorial em estilo comportamental.
+    n = len(x)
+    total = Signal(modbv(0)[n + 1:])
 
-    Versao combinacional que pode usar operacoes aritmeticas diretas
-    sobre os vetores para gerar soma e carry.
-
-    Args:
-        x: Vetor de entrada.
-        y: Vetor de entrada.
-        soma: Vetor de saida.
-        carry: Carry de saida.
-    """
     @always_comb
     def comb():
-        pass
+        total.next = x + y
+        soma.next = total[n:]
+        carry.next = total[n]
 
-    return instances()
+    return comb
