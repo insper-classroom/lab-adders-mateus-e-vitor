@@ -27,9 +27,11 @@ def halfAdder(a, b, soma, carry):
 @block
 def fullAdder(a, b, c, soma, carry):
     s = [Signal(bool(0)) for i in range(3)]
+    haList = [None for i in range(2)]
 
-    half_1 = halfAdder(a, b, s[0], s[1]) 
-    half_2 = halfAdder(c, s[0], soma, s[2])
+    haList[0] = halfAdder(a, b, s[0], s[1]) 
+    haList[1] = halfAdder(c, s[0], soma, s[2])
+
     @always_comb
     def comb():
         carry.next = s[1] | s[2]
